@@ -20,16 +20,16 @@ goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message({
                 'z': 0.4
             },
             'orientation': {
-                'x': 0.0,
+                'x': 1.0,
                 'y': 0.0,
                 'z': 0.0,
-                'w': 1.0
+                'w': 0.0
             }
         },
         'frame_id': 'world',
         'max_velocity': {
             'linear': 0.5,
-            'angular': 0.5
+            'angular': 1.5
         },
         'max_joint_velocity': 0.5,
         'max_joint_acceleration': 0.5
@@ -42,16 +42,16 @@ goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message({
                 'z': 0.4
             },
             'orientation': {
-                'x': 0.0,
+                'x': 1.0,
                 'y': 0.0,
                 'z': 0.0,
-                'w': 1.0
+                'w': 0.0
             }
         },
         'frame_id': 'world',
         'max_velocity': {
             'linear': 0.5,
-            'angular': 0.5
+            'angular': 1.5
         },
         'max_joint_velocity': 0.5,
         'max_joint_acceleration': 0.5
