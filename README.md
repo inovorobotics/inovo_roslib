@@ -1,5 +1,8 @@
 # inovo_roslib
-Example roslibpy implementations for controlling the robot using rosbridge
+Example roslibpy implementations for controlling the robot using the rosbridge JSON interface.
+
+## Introduction
+This repository provides examples which use the [rosbridge protocol](https://github.com/RobotWebTools/rosbridge_suite/blob/develop/ROSBRIDGE_PROTOCOL.md) to communicate with the robot. There are multiple client libraries written for languages that support this protocol, notable examples being [roslibjs](https://github.com/RobotWebTools/roslibjs) for javascript and [roslibpy](https://github.com/gramaziokohler/roslibpy) for python. These examples are written against roslibpy.
 
 ## Usage
 
