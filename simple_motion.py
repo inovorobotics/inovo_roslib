@@ -9,10 +9,13 @@ client.run()
 
 print('Is ROS connected?', client.is_connected)
 
+# Create a new action client - this is an object used to send motion goals to the robot
 action_client = roslibpy.actionlib.ActionClient(client,
                                                 '/default_move_group/move',
                                                 'virtual_robot/MotionAction')
 
+# Build up a goal - all positional units are in meters, and all orientations are in quaternion format
+# This goal contains two motions specified by cartesian targets
 goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message({
     'motion_sequence': [{
         'pose': {
@@ -60,10 +63,20 @@ goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message({
     }]
 }))
 
+# This set's up a callback so we get some feedback while the goal is running
 goal.on('feedback', lambda f: print(f))
+
+# Start the goal - this is where the robot will start moving!
 goal.send()
+
+# Wait for the goal to finish - only wait for 10 seconds
 result = goal.wait(10)
+
+# Clean up the action client
 action_client.dispose()
+
+# Print the "result" from the action server
 print('Result: {}'.format(result))
 
+# Clean up the connection to the robot
 client.terminate()
