@@ -14,31 +14,76 @@ Install python dependencies
 pip3 install -r requirements.txt
 ```
 
-Replace the IP address in the scripts with the IP address of your robot.
-
-Run the examples with:
+To get started created a new file, import  roslibpy and sequence_cleint as below then create an instance 
 ```
-./<scriptname>
+import roslibpy
+from sequence_client import SequenceClient
+```
+create a ROSLibPy insance setting the host name or IP in the constructor@
+```
+client = roslibpy.Ros(host='localhost', port=9090)
 ```
 
-## Functions
+next you can check the connection with the is_connected function
+```
+# Sanity check to see if we are connected
+print('Is ROS connected?', client.is_connected)
+```
+and create an instance of the SequenceClint
+```
+# The sequence client wraps up our sequence-related service calls
+sc = SequenceClient(client, "/sequence")
+```
+at the end of your file add a distructor to close the ROS bridge connection
+```
+# Clean up the connection to the robot
+client.terminate()
+```
+now you are ready to define your application in between, for example
 
-#get_status
+```
+sc.call_function("doPick")
+sc.wait_until_idle()
+print ("done Pick")
+
+sc.call_function("doPlace")
+sc.wait_until_idle()
+print ("done Place")
+```
+
+
+## SequenceClient Functions
+
+**get_status()**
 returns the run time status as an integer, 0 = idle, 1 = running, 2 = paused
 
-#is_running
+**is_running()**
 return true if the sequencer is running, otherwise returns false
 
-#is_idle
+**is_idle()**
 return trie if the sequencer is idle, otherwise returns false
 
-#wait_until_idle
+**wait_until_idle()**
 blocks until the sequener is idle, then returns. this functions implments a 100ms sleep between each status check.
 
-#start
-runs the entire sequence
+**start()**
+continues the sequence if pauses, if stopped runs from the start block
 
-#call_function(<function_name>)
-runs the speficed function currently loead in the blockly sequence 
+**stop()**
+stops the sequence
+
+**pause()**
+pauses the sequence at the current location
+
+**step()**
+runs the next block at the current location
+
+**call_function(*<function_name>*)**
+runs the specified function currently loead in the blockly sequence 
+
+**upload(*<xml_string>*)**
+allow you to upload a blockly sequence in XML format to the sequencer, this will overwrite any existing sequence.
+
+
 
 
