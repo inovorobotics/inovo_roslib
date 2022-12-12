@@ -20,3 +20,25 @@ Run the examples with:
 ```
 ./<scriptname>
 ```
+
+## Functions
+
+#get_status
+returns the run time status as an integer, 0 = idle, 1 = running, 2 = paused
+
+#is_running
+return true if the sequencer is running, otherwise returns false
+
+#is_idle
+return trie if the sequencer is idle, otherwise returns false
+
+#wait_until_idle
+blocks until the sequener is idle, then returns. this functions implments a 100ms sleep between each status check.
+
+#start
+runs the entire sequence
+
+#call_function(<function_name>)
+runs the speficed function currently loead in the blockly sequence 
+
+
