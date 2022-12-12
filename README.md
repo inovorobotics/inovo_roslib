@@ -19,9 +19,10 @@ To get started created a new file, import  roslibpy and sequence_cleint as below
 import roslibpy
 from sequence_client import SequenceClient
 ```
-create a ROSLibPy insance setting the host name or IP in the constructor@
+create a ROSLibPy insance setting the host name or IP in the constructor
 ```
 client = roslibpy.Ros(host='localhost', port=9090)
+client.run()
 ```
 
 next you can check the connection with the is_connected function
