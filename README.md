@@ -83,8 +83,12 @@ runs the next block at the current location
 runs the specified function currently loead in the blockly sequence 
 
 **upload(*<xml_string>*)**
-allow you to upload a blockly sequence in XML format to the sequencer, this will overwrite any existing sequence.
+allows you to upload a blockly sequence in XML format to the sequencer, this will overwrite any existing sequence.
 
+**getVar(*<var_name>*)**
+returns the current value of a user variable from the running sequence. If the variable is not in scope or the sequence is not running throws an exception
 
+**setVar(*<var_name>*,*<value>*)**
+sets the value of a user variable in the running sequence. If the variable is not in scope or the sequence is not running throws an exception
 
 

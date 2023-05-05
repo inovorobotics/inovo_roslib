@@ -2,7 +2,7 @@ from __future__ import print_function
 import roslibpy
 import time
 
-# Run Time States retuned by 
+# Run Time States retuned by
 RUNTIME_STATUS_IDLE = 0
 RUNTIME_STATUS_RUNNING = 1
 RUNTIME_STATUS_PAUSED = 2
@@ -23,7 +23,7 @@ class SequenceClient:
         self._step_service = roslibpy.Service(self._ros, f"{self._ns}/step", "std_srvs/Trigger")
         self._debug_service = roslibpy.Service(self._ros, f"{self._ns}/debug", "std_srvs/Trigger")
         self._runTimeState_client = roslibpy.Topic(self._ros, '/sequence/runtime_state', '/commander_msgs/RuntimeState')
-        self._runTimeState_client.subscribe (self.status_update) 
+        self._runTimeState_client.subscribe (self.status_update)
 
     def status_update( self, message):
         self.runtime_status = message['state']
@@ -86,3 +86,34 @@ class SequenceClient:
         result = self._step_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to step the sequence: {result['message']}")
+        
+    def setVar(self, var_name, var_val):
+        """
+        var_name = variable Name in str 
+        var_val = float/int
+        """
+        
+        service = roslibpy.Service( self._ros, '/sequence/set_var', 'commander_msgs/SetVariable')
+        request = roslibpy.ServiceRequest({
+        "name": var_name,
+        "value": str(var_val)})
+        result = service.call(request)
+
+        if not result['success']:
+            raise Exception(f"Unable to set varable : {result['message']}")
+
+
+
+    def getVar(self, var_name):
+        """
+        var_name = variable Name in str 
+        return value or thorws exception if not found
+        """
+        service = roslibpy.Service( self._ros, '/sequence/get_var', 'commander_msgs/GetVariable')
+        request = roslibpy.ServiceRequest({
+        "name": var_name})
+        result = service.call(request)
+        if not result['success']:
+            raise Exception(f"Unable to get varable : {result['message']}")
+        else :
+            return result['value']
