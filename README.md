@@ -91,4 +91,13 @@ returns the current value of a user variable from the running sequence. If the v
 **setVar(*<var_name>*,*<value>*)**
 sets the value of a user variable in the running sequence. If the variable is not in scope or the sequence is not running throws an exception
 
+## Example_1.py - running the sequencer remoetly. calling functions on demand and reading variables in real time
+This example connects to the robot, runs the main sequence and then calls two functions in the sequence. 
+Import example_1_sequence.isq into the robot using the standard browser interface (menu>import)
+Update the IP address on line 10 to point at your robot.
+Make sure they robot can move to the waypoints in the example sequence safety, without collision or risk to people.
+Run the example_1.py file, it will prompt you to press enter before it runs the main sequence. 
+While the robot moves the python code will pole the statue of the sequencer and read a user variable called ‘n’ printing the value to the debug console. When the sequence finishes execution the python code will then prompt you to press enter again before calling the up down function. It will wait until this function completes and the sequencer returns to the idle state before prompting you to press enter again before calling the left right sequence.
 
+## Example_2_upload_sequence.py – uploads a sequence as XML data and runs it
+This example connects to the robot, uploads a sequence and runs it. You can capture a sequence by exporting the currently loaded sequence from the main browser interface, select export from the file menu.
