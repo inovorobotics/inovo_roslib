@@ -82,8 +82,14 @@ runs the next block at the current location
 **call_function(*<function_name>*)**
 runs the specified function currently loead in the blockly sequence 
 
-**upload(*<xml_string>*)**
+**load_project_XML(*<path_to_file>*)**
+This loads a project file in .isq format and returns the sequence and workspace parts as xml strings that can then be used to call upload_seq and upload_ws (see below)
+
+**upload_seq(*<xml_string>*)**
 allows you to upload a blockly sequence in XML format to the sequencer, this will overwrite any existing sequence.
+
+**upload_ws(*<xml_string>*)**
+allows you to upload a blockly sequence in XML format to the workspace, this will overwrite any existing workspace config.
 
 **getVar(*<var_name>*)**
 returns the current value of a user variable from the running sequence. If the variable is not in scope or the sequence is not running throws an exception
