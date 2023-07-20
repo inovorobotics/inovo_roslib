@@ -56,31 +56,34 @@ print ("done Place")
 ## SequenceClient Functions
 
 **get_status()**
-returns the run time status as an integer, 0 = idle, 1 = running, 2 = paused
+returns the run time status as an integer, 0 = idle, 1 = running, 2 = paused, 3 = paused on error
 
 **is_running()**
-return true if the sequencer is running, otherwise returns false
+returns true if the sequencer is running, otherwise returns false
 
 **is_idle()**
-return trie if the sequencer is idle, otherwise returns false
+return true if the sequencer is idle, otherwise returns false
 
 **wait_until_idle()**
-blocks until the sequener is idle, then returns. this functions implments a 100ms sleep between each status check.
+blocks until the sequencer is idle, then returns. this functions implments a 100ms sleep between each status check.
 
-**start()**
-continues the sequence if pauses, if stopped runs from the start block
+**start_sequence()**
+if stopped runs the sequence from the start block
 
-**stop()**
+**stop_sequence()**
 stops the sequence
 
-**pause()**
+**pause_sequence()**
 pauses the sequence at the current location
 
-**step()**
+**continue_sequence()**
+continues the sequence from where it has been paused
+
+**step_sequence()**
 runs the next block at the current location
 
 **call_function(*<function_name>*)**
-runs the specified function currently loead in the blockly sequence 
+runs the specified function currently loaded in the blockly sequence 
 
 **load_project_XML(*<path_to_file>*)**
 This loads a project file in .isq format and returns the sequence and workspace parts as xml strings that can then be used to call upload_seq and upload_ws (see below)
@@ -97,13 +100,23 @@ returns the current value of a user variable from the running sequence. If the v
 **setVar(*<var_name>*,*<value>*)**
 sets the value of a user variable in the running sequence. If the variable is not in scope or the sequence is not running throws an exception
 
-## Example_1.py - running the sequencer remoetly. calling functions on demand and reading variables in real time
+## Robot_Client functions
+Please refer to the "robot_client_manual.md" for this library's functions
+
+## Example_1_sequence.py - running the sequencer remoetly. calling functions on demand and reading variables in real time
 This example connects to the robot, runs the main sequence and then calls two functions in the sequence. 
 Import example_1_sequence.isq into the robot using the standard browser interface (menu>import)
 Update the IP address on line 10 to point at your robot.
-Make sure they robot can move to the waypoints in the example sequence safety, without collision or risk to people.
+Make sure the robot can move to the waypoints in the example sequence safely, without collision or risk to people.
 Run the example_1.py file, it will prompt you to press enter before it runs the main sequence. 
 While the robot moves the python code will pole the statue of the sequencer and read a user variable called ‘n’ printing the value to the debug console. When the sequence finishes execution the python code will then prompt you to press enter again before calling the up down function. It will wait until this function completes and the sequencer returns to the idle state before prompting you to press enter again before calling the left right sequence.
 
 ## Example_2_upload_sequence.py – uploads a sequence as XML data and runs it
 This example connects to the robot, uploads a sequence and runs it. You can capture a sequence by exporting the currently loaded sequence from the main browser interface, select export from the file menu.
+
+## Example_3_robot_control.py
+This example connects to the robot, then checks for the safety stop and estop statuses, and asks the user to unlock the buttons if they are pressed down.
+After that, it turns the arm's power on and activates it, grabs some of the robot's information, e.g., the TCP coordinates, and turns off the arm again.
+
+## Example_4_auto_resume.py
+This example connects to the arm and keeps looping until it is killed by sending a termination or interruption signal (e.g., using CTRL + C to interrupt). While running a sequence it continuously checks if the arm has paused on an error, either due to a collision or due to either of the safety or the emergency buttons being pressed. If it detects that either of them are pressed, it asks the user to release the button, re-enables the arm, and continues the sequence from the position it was paused at.

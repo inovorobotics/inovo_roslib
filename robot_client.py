@@ -6,11 +6,6 @@ import roslibpy
 GRAVITY = 9.8
 
 class RobotClient:
-    # Run Time States retuned by
-    SEQUENCE_STATUS_IDLE = 0
-    SEQUENCE_STATUS_RUNNING = 1
-    SEQUENCE_STATUS_PAUSED = 2
-    SEQUENCE_STATUS_PAUSED_ON_ERROR = 3
 
     SAFETY_CIRCUIT_OPEN = 0
     SAFETY_CIRCUIT_CLOSED = 1
@@ -55,18 +50,12 @@ class RobotClient:
         self.estop_state_client.subscribe(self.estop_state)
         self.estop = {'active': False,
                       'circuit': False}
-        
 
         self.safe_stop_state_client = roslibpy.Topic(self._ros, '/psu/safe_stop/state', 'psu_msgs/SafetyCircuitState')
         self.safe_stop_state_client.subscribe(self.safety_stop_state)
         self.safe_stop = {'active': False,
                       'circuit': False}
-        
 
-        self.sequence_state_client = roslibpy.Topic(self._ros, '/sequence/runtime_state', 'commander_msgs/RuntimeState')
-        self.sequence_state_client.subscribe(self.sequence_state)
-        self.seq_state = 0
-        
 
         #### Services ####
 
@@ -95,7 +84,6 @@ class RobotClient:
         return self.Speed['Ang']
 
 
-
     def tcp_pose(self, message):
         # Setting the coordinates
         self.Pose['Coords']['x'] = message['pose']['position']['x'] 
@@ -110,11 +98,10 @@ class RobotClient:
 
     def get_tcp_coordinates(self): # get_tcpCoordinates()
         return self.Pose['Coords']
-    
-    
+
     def get_tcp_orientation(self): # get_Orient()
         return self.Pose['Ori']
-    
+
 
     def joint_states(self, message):
         jointNum = len(message['position']) # Number of joints from the ROS dictionary
@@ -160,36 +147,24 @@ class RobotClient:
 
     def get_arm_power(self):
         return self.arm['powered']
-    
+
     def get_arm_active(self):
         return self.arm['driver_active']
-    
-    
 
     def estop_state(self, message):
         self.estop['active'] = message['active']
         self.estop['circuit'] = message['circuit_complete']
 
-
     def get_estop_state(self):
         return self.estop 
-    
+
     def safety_stop_state(self, message):
         self.safe_stop['active'] = message['active']
         self.safe_stop['circuit'] = message['circuit_complete']
-    
+
     def get_safety_stop_state(self):
         return self.safe_stop
-    
 
-
-    def sequence_state(self, message):
-        self.seq_state = message['state']
-    
-    def get_sequence_state(self):
-        return self.seq_state
-
-    
     ##### SERVICES #####
 
     def safe_stop_reset(self): ## MAKE SURE IT IS PHYSICALLY INACTIVE
@@ -197,14 +172,12 @@ class RobotClient:
         result = self.safe_stop_reset_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to reset safety stop: {result['message']}")
-        
-    
+
     def estop_reset(self):
         request = roslibpy.ServiceRequest()
         result = self.estop_reset_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to reset emergency stop: {result['message']}")
-    
 
     def arm_power_on(self):
         request = roslibpy.ServiceRequest()
@@ -218,7 +191,6 @@ class RobotClient:
         if not result['success']:
             raise Exception(f"Unable to turn off power: {result['message']}")
 
-
     def robot_arm_enable(self):
         request = roslibpy.ServiceRequest()
         result = self.arm_on_service.call(request)
@@ -230,7 +202,6 @@ class RobotClient:
         result = self.arm_off_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to disable the arm: {result['message']}")
-  
 
     def set_power(self, bool):
         if bool == True:
@@ -239,7 +210,6 @@ class RobotClient:
             self.arm_power_off()
         else:
             raise Exception(f"Unable to set state")
-
 
     def set_arm(self, bool):
         if bool == True:

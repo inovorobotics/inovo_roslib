@@ -41,13 +41,6 @@ Returns a dictionary with the state of the emergency stop. When active is true i
 **get_safety_stop_state**
 Returns a dictionary with the state of the safety stop. When active is true it means it is no longer pushed down, and vice versa. When circuit is true it means the circuit is complete.
 
-**get_sequence_state()**
-Returns an integer depending on the current state of the sequence.
-    SEQUENCE_STATUS_IDLE = 0
-    SEQUENCE_STATUS_RUNNING = 1
-    SEQUENCE_STATUS_PAUSED = 2
-    SEQUENCE_STATUS_PAUSED_ON_ERROR = 3
-As defined at the top of the library
 
 **safety_stop_reset()**
 Resets the safety stop status. Make sure that the physical switch is active, i.e. not pressed down.

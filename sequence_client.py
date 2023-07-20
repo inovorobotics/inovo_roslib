@@ -12,6 +12,7 @@ class SequenceClient:
     RUNTIME_STATUS_IDLE = 0
     RUNTIME_STATUS_RUNNING = 1
     RUNTIME_STATUS_PAUSED = 2
+    RUNTIME_STATUS_PAUSED_ON_ERROR = 3
 
     def __init__(self, ros, ns):
         self._ros = ros
@@ -26,6 +27,7 @@ class SequenceClient:
         self._pause_service = roslibpy.Service(self._ros, f"{self._ns}/pause", "std_srvs/Trigger")
         self._step_service = roslibpy.Service(self._ros, f"{self._ns}/step", "std_srvs/Trigger")
         self._debug_service = roslibpy.Service(self._ros, f"{self._ns}/debug", "std_srvs/Trigger")
+        self._continue_service = roslibpy.Service(self._ros, '/sequence/continue', 'std_srvs/Trigger')
         self._runTimeState_client = roslibpy.Topic(self._ros, '/sequence/runtime_state', '/commander_msgs/RuntimeState')
         self._runTimeState_client.subscribe (self.status_update)
         self._setVar_service = roslibpy.Service( self._ros, '/sequence/set_var', 'commander_msgs/SetVariable')
@@ -42,6 +44,9 @@ class SequenceClient:
 
     def is_idle(self):   # "commander_msgs/RuntimeState"
         return (self.runtime_status == self.RUNTIME_STATUS_IDLE)
+    
+    def is_paused_on_error(self):
+        return(self.runtime_status == self.RUNTIME_STATUS_PAUSED_ON_ERROR)
 
     def wait_until_idle(self):
         while (self.is_running()): 
@@ -76,7 +81,7 @@ class SequenceClient:
 
         return seq, ws
 
-    def start(self):
+    def start_sequence(self):
         request = roslibpy.ServiceRequest()
         result = self._start_service.call(request)
         if result['success']:
@@ -92,29 +97,35 @@ class SequenceClient:
         else:
             raise Exception(f"Unable to start the sequence: {result['message']}")
 
-    def stop(self):
+    def stop_sequence(self):
         request = roslibpy.ServiceRequest()
         result = self._stop_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to stop the sequence: {result['message']}")
 
-    def pause(self):
+    def pause_sequence(self):
         request = roslibpy.ServiceRequest()
         result = self._pause_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to pause the sequence: {result['message']}")
 
-    def debug(self):
+    def debug_sequence(self):
         request = roslibpy.ServiceRequest()
         result = self._debug_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to debug the sequence: {result['message']}")
 
-    def step(self):
+    def step_sequence(self):
         request = roslibpy.ServiceRequest()
         result = self._step_service.call(request)
         if not result['success']:
             raise Exception(f"Unable to step the sequence: {result['message']}")
+        
+    def continue_sequence(self):
+        request = roslibpy.ServiceRequest()
+        result = self._continue_service.call(request)
+        if not result['success']:
+            raise Exception(f"Unable to continue the sequence: {result['message']}")
         
     def setVar(self, var_name, var_val):
         """
