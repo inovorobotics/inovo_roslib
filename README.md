@@ -30,7 +30,7 @@ next you can check the connection with the is_connected function
 # Sanity check to see if we are connected
 print('Is ROS connected?', client.is_connected)
 ```
-and create an instance of the SequenceClint
+and create an instance of the SequenceClient
 ```
 # The sequence client wraps up our sequence-related service calls
 sc = SequenceClient(client, "/sequence")
@@ -120,3 +120,25 @@ After that, it turns the arm's power on and activates it, grabs some of the robo
 
 ## Example_4_auto_resume.py
 This example connects to the arm and keeps looping until it is killed by sending a termination or interruption signal (e.g., using CTRL + C to interrupt). While running a sequence it continuously checks if the arm has paused on an error, either due to a collision or due to either of the safety or the emergency buttons being pressed. If it detects that either of them are pressed, it asks the user to release the button, re-enables the arm, and continues the sequence from the position it was paused at.
+
+## Example_5_joystickcontrol.py 
+**Pre-requisites**
+Other than our own library (robot_client.py) and roslibpy, using the joystick requires the use of the PyGame library.
+Note: This was tested using the Logitech F310 gamepad
+
+**The Program**
+The getJoy function takes the axis and the joystick instance as parameters.
+This function grabs the offset of the joystick stick at the specified direction defined for the joystick make, e.g. for the left stick up and down would be axis 1.
+An if condition is added to the function to make up for joystick drift.
+The demand is multiplied by 0.1 to make the movement slower and smoother for safety.
+
+The joystick is initialised using the PyGame library following normal procedure.
+A kill variable is created to be used to exit the while loop.
+The loop captures all the joystick inputs on the stick being moved on the 0, 1 and 3 axes and records it in a dictionary.
+It reads buttons pressed continuously to waiting for button 1, 5, or 4 to be pressed. In this example these buttons correspond to the B, RB, and LB buttons on the Logitech F310.
+Pressing B kills the program.
+Pressing RB calls the linear jog function from our library, moving the arm linearly.
+Pressing LB calls the angular jog function causing a rotation of the arm.
+If neither buttons are pressed the program sends a zero message to avoid drifting.
+
+Exiting the while loop the program terminates the joystick control and client connection.

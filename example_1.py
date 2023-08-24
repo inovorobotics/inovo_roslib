@@ -7,10 +7,10 @@ from sequence_client import SequenceClient
 
 # TODO replace the IP address here with the IP address of your robot
 try:
-  client = roslibpy.Ros(host='192.168.8.126', port=9090)
+  client = roslibpy.Ros(host='localhost', port=9090)
   client.run()
 except:
-  print("can't connect to the robot, check your IP addess and netowrk connection")
+  print("can't connect to the robot, check your IP address and network connection")
   exit()
 
 # Sanity check to see if we are connected

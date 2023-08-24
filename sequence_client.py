@@ -33,6 +33,7 @@ class SequenceClient:
         self._setVar_service = roslibpy.Service( self._ros, '/sequence/set_var', 'commander_msgs/SetVariable')
         self._getVar_service = roslibpy.Service( self._ros, '/sequence/get_var', 'commander_msgs/GetVariable')
 
+
     def status_update( self, message):
         self.runtime_status = message['state']
 

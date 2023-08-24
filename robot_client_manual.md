@@ -66,3 +66,12 @@ Sets the state of the power to the arm either on (1) or off (0). Note that it ta
 
 **set_arm(bool)**
 Sets the state of the robot arm either on (1) or off (0). 
+
+
+### JOG CONTROLS ###
+**linear_jog_pub(client, message) & angular_jog_pub(client, message)**
+The functions take in the client that connects to the robot and a message to be published back to the robot
+The message must be of type dictionary with elements of 'x', 'y' and 'z'
+The cartesian jog allows for offsetting the arm by the input to each coordinate
+Linear jog offsets the x, y, and z linearly
+Angular jog causes a rotation of the TCP

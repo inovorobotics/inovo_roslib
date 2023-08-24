@@ -20,7 +20,7 @@ try:
   client = roslibpy.Ros(host='localhost', port=9090)
   client.run()
 except:
-  print("can't connect to the robot, check your IP addess and netowrk connection")
+  print("can't connect to the robot, check your IP address and network connection")
   exit()
 
 # Sanity check to see if we are connected
@@ -28,7 +28,7 @@ print('Verifying the ROS target is connected?', client.is_connected)
 
 # The sequence client wraps up our sequence-related service calls
 sc = SequenceClient(client, "/sequence")
-rc = RobotClient(client, "/default_move_group")
+rc = RobotClient(client)
 
 # Run the sequence from the start block
 
@@ -58,7 +58,7 @@ while(not killer.kill_now): # While it is not killed
            rc.robot_arm_enable()
            time.sleep(2)
            sc.continue_sequence()
-           
+
 
     time.sleep(1)
       

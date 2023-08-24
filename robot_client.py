@@ -3,16 +3,15 @@ import roslibpy
 
 
 
-GRAVITY = 9.8
 
 class RobotClient:
 
     SAFETY_CIRCUIT_OPEN = 0
     SAFETY_CIRCUIT_CLOSED = 1
 
-    def __init__(self, ros, ns):
+    def __init__(self, ros):
         self._ros = ros
-        self._ns = ns
+
 
 
         # SUBSCRIBING TO TCP SPEED ON ROS
@@ -39,7 +38,9 @@ class RobotClient:
 
         self.power_state_client = roslibpy.Topic(self._ros, '/psu/status', 'psu_msgs/Status')
         self.power_state_client.subscribe(self.power_state)
-        self.power = False
+        self.power = {'voltage': 0.0,
+                      'current': 0.0,
+                      'state': False}
 
         self.arm_ready_client = roslibpy.Topic(self._ros, '/robot/robot_state', 'arm_msgs/RobotState')
         self.arm_ready_client.subscribe(self.arm_ready)
@@ -51,6 +52,7 @@ class RobotClient:
         self.estop = {'active': False,
                       'circuit': False}
 
+
         self.safe_stop_state_client = roslibpy.Topic(self._ros, '/psu/safe_stop/state', 'psu_msgs/SafetyCircuitState')
         self.safe_stop_state_client.subscribe(self.safety_stop_state)
         self.safe_stop = {'active': False,
@@ -59,6 +61,7 @@ class RobotClient:
 
         #### Services ####
 
+        ## Arm and PSU power and activation ##
         self.safe_stop_reset_service = roslibpy.Service(self._ros, '/psu/safe_stop/reset', 'std_srvs/Trigger')
         
         self.estop_reset_service = roslibpy.Service(self._ros, '/psu/estop/reset', 'std_srvs/Trigger')
@@ -70,6 +73,7 @@ class RobotClient:
         self.arm_on_service = roslibpy.Service(self._ros, '/robot/enable', 'std_srvs/Trigger')
 
         self.arm_off_service = roslibpy.Service(self._ros, '/robot/disable', 'std_srvs/Trigger')
+
 
 #### TOPIC FUNCTIONS ####
 
@@ -84,12 +88,13 @@ class RobotClient:
         return self.Speed['Ang']
 
 
+
     def tcp_pose(self, message):
         # Setting the coordinates
         self.Pose['Coords']['x'] = message['pose']['position']['x'] 
         self.Pose['Coords']['y'] = message['pose']['position']['y']
         self.Pose['Coords']['z'] = message['pose']['position']['z']
-    
+
         # Setting the orientations
         self.Pose['Ori']['x'] = message['pose']['orientation']['x']
         self.Pose['Ori']['y'] = message['pose']['orientation']['y']
@@ -117,7 +122,7 @@ class RobotClient:
             self.State['vel'][x] = message['velocity'][x]
             self.State['eff'][x] = message['effort'][x]
 
-    
+
     def get_joint_angles(self): # get_joint_angles()[angle_num] or get_JointAngles() to get an array of them
         return self.State['pos']
     
@@ -131,9 +136,11 @@ class RobotClient:
     ## POWER AND ARM STATUS TOPICS
     def power_state(self, message):
         if message['state'] == "BUS_ON":
-            self.power = True
+            self.power['state'] = True
         else:
-            self.power = False
+            self.power['state'] = False
+        self.power["voltage"] = message["voltage"]
+        self.power["current"] = message["current"]
 
     def get_power_state(self):
         return self.power
@@ -147,17 +154,19 @@ class RobotClient:
 
     def get_arm_power(self):
         return self.arm['powered']
-
+    
     def get_arm_active(self):
         return self.arm['driver_active']
+
 
     def estop_state(self, message):
         self.estop['active'] = message['active']
         self.estop['circuit'] = message['circuit_complete']
 
+
     def get_estop_state(self):
         return self.estop 
-
+    
     def safety_stop_state(self, message):
         self.safe_stop['active'] = message['active']
         self.safe_stop['circuit'] = message['circuit_complete']
@@ -191,6 +200,7 @@ class RobotClient:
         if not result['success']:
             raise Exception(f"Unable to turn off power: {result['message']}")
 
+
     def robot_arm_enable(self):
         request = roslibpy.ServiceRequest()
         result = self.arm_on_service.call(request)
@@ -219,3 +229,23 @@ class RobotClient:
         else:
             raise Exception(f"Unable to set state")
 
+
+
+#### CARTESIAN JOG MOTION ####
+
+## the functions take in the client that connects to the robot and a message to be sent
+## the message must be of type dictionary with elements of 'x', 'y' and 'z'
+## the cartesian jog allows for offsetting the arm by the input to each coordinate
+## linear jog offsets the x, y, and z linearly
+## angular jog causes a rotation of the TCP
+    def linear_jog_pub(self, client, message):
+
+        publisher = roslibpy.Topic(client, '/default_move_group/cartesian_jog', 'commander_msgs/CartesianJogDemand')
+
+        publisher.publish(roslibpy.Message({"twist": {"linear": message}}))
+
+    def ang_jog_pub(self, client, message):
+
+        publisher = roslibpy.Topic(client, '/default_move_group/cartesian_jog', 'commander_msgs/CartesianJogDemand')
+
+        publisher.publish(roslibpy.Message({"twist": {"angular": message}}))
