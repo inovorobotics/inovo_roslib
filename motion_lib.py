@@ -85,7 +85,7 @@ class MotionLib:
     def printStatus(self, f):
         self.goalStat["state"] = f["status"]
 
-    def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server
+    def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server, returns a string to resport sucess or timeout
 
         action_client = roslibpy.actionlib.ActionClient(client,
                                                 '/default_move_group/move',
@@ -100,9 +100,12 @@ class MotionLib:
         ## Start the goal - this is where the robot will start moving!
         goal.send()
 
-        print(self.wait_for_goal(timeout))
+        result = self.wait_for_goal(timeout)    
+
         # Clean up the action client
         action_client.dispose()
+        
+        return result
 
     def print_goal(self):
         print(self.goal_info)

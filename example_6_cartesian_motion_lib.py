@@ -37,8 +37,9 @@ try:
   ml.set_max_joint_velocity_accelartion(0, 1.0, 1.0) # Sets maximum joint velocity and acceleration
   ml.set_max_joint_velocity_accelartion(1, 1.0, 1.0) # goal number (starting from 0), velocity, acceleration
 
-  ml.start_motion(client, 30)
-  print("done")
+  result =  ml.start_motion(client, 30)
+
+  print(result)
 
 except Exception as e:
     print("Error: Could not complete task-- " + str(e))
