@@ -24,7 +24,7 @@ sc = SequenceClient(client, "/sequence")
 print("press enter to run sequence from start - WARNING the robot will move!")
 input()
 
-sc.start()
+sc.start_sequence()
 time.sleep(1) # 1s for the seq to start
 
 while(sc.is_running()):
