@@ -36,6 +36,10 @@ class MotionLib:
             'blend':{'linear': 0.0,
                      'angular' : 0.0
                     }
+            'max_joint_acceleration': 0.5,
+            'blend':{'linear': 0.0,
+                     'angular' : 0.0
+                    }
         }
 
 
@@ -69,11 +73,16 @@ class MotionLib:
     def set_motion_blend(self, pos, linear, angular):
         self.goal_info[pos]['blend']['linear'] = linear
         self.goal_info[pos]['blend']['angular'] = angular
+    
+    def set_motion_blend(self, pos, linear, angular):
+        self.goal_info[pos]['blend']['linear'] = linear
+        self.goal_info[pos]['blend']['angular'] = angular
 
     def set_max_velocity(self, pos, linear, angular): # Sets the maximum linear and angular velociteis
         self.goal_info[pos]['max_velocity']['linear'] = linear
         self.goal_info[pos]['max_velocity']['angular'] = angular
 
+    def set_max_joint_velocity_acceleration(self, pos, velocity, acceleration): # Sets the maximum join velocity and acceleration
     def set_max_joint_velocity_acceleration(self, pos, velocity, acceleration): # Sets the maximum join velocity and acceleration
         self.goal_info[pos]['max_joint_velocity'] = velocity
         self.goal_info[pos]['max_joint_acceleration'] = acceleration
@@ -82,14 +91,18 @@ class MotionLib:
         self.goalStat["state"] = f["status"]
 
     def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server
+    def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server
 
         action_client = roslibpy.actionlib.ActionClient(client,
                                                 '/default_move_group/move',
+                                                'commander_msgs/MotionAction')
                                                 'commander_msgs/MotionAction')
 
         message_ = {'motion_sequence': self.goal_info} ## Creating a dictionary that looks the same as the simple motion
 
         goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(message_))
+        #goal.on('feedback', lambda f: print(f))
+        goal.on("feedback", lambda f: print(f))
         #goal.on('feedback', lambda f: print(f))
         goal.on("feedback", lambda f: print(f))
         goal.on("status", lambda f: self.printStatus(f))
@@ -146,7 +159,10 @@ class MotionLib:
                                 }}
 
    
+
+   
         goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(message_))
+        
         
         goal.on('feedback', lambda f: print(f))
         goal.send()
@@ -154,6 +170,9 @@ class MotionLib:
         action_client.dispose()
         #print('Result: {}'.format(result))
         return result
+
+
+
 
 
 
