@@ -8,7 +8,7 @@ try:
   client = roslibpy.Ros(host='192.168.8.74', port=9090) # replace with your robots IP address
   client.run()
 except:
-  print("can't connect to the robot, check your IP addess and netowrk connection")
+  print("Cannot connect to the robot, check your IP addess and network connection")
   exit()
 
 # Sanity check to see if we are connected

@@ -9,6 +9,9 @@ Sets the coordinates for goal "waypoint_number" to x, y, and z coordinates inser
 **set_motion_orientation(waypoint_number, x, y, z, w)**
 Sets the orientation for goal "waypoint_number" to x, y, z and w coordinates inserted.
 
+**set_motion_blend(waypoint_number, linear, angular)**
+Sets the blend parameters for goal "waypoint_number" to linear and angular inserted.
+
 
 **set_max_velocity(waypoint_number, linear, angular)**
 Sets the velocity for goal "waypoint_number" to linear and angular speed values inserted.

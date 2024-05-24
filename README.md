@@ -142,3 +142,12 @@ Pressing LB calls the angular jog function causing a rotation of the arm.
 If neither buttons are pressed the program sends a zero message to avoid drifting.
 
 Exiting the while loop the program terminates the joystick control and client connection.
+
+## Example_6_cartesian_motion_lib.py
+This example demonstrates a cartesian motion with the robot arm, moving once between two locations.
+
+## Example_7_spiral_motion_lib.py
+This example demonstrates a more complicated motion using the robot arm representing a spiral path. The example also demonstrates the use of the blend parameter used in defining smooth motion and transitions between parts of the trajectory.
+
+## Example_8_joint_motion_lib.py
+This example demonstrates motion based on joint goals rather than TCP goals.

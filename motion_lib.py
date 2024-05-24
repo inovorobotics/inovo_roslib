@@ -32,7 +32,10 @@ class MotionLib:
             'max_velocity': {'linear': 0.5, ## Default velocities
                               'angular': 1.5},
             'max_joint_velocity': 0.5,
-            'max_joint_acceleration': 0.5
+            'max_joint_acceleration': 0.5,
+            'blend':{'linear': 0.0,
+                     'angular' : 0.0
+                    }
         }
 
 
@@ -44,15 +47,6 @@ class MotionLib:
             
         }
 
-
-    def wait_for_goal(self, goal_timeout):
-        quit_time = time.time() + goal_timeout
-        while time.time() < quit_time:
-            if self.goalStat["state"] == 3:
-                return "Success"
-            if self.goalStat["state"] == 4:
-                return "Unable to solve IK"
-        return "Timed out"
 
     def init_move(self, no_of_goals): # Initialises an array of the dictionary simple motion with the set number of goals  
         self.goal_num = no_of_goals
@@ -71,41 +65,40 @@ class MotionLib:
         self.goal_info[pos]['pose']['orientation']['y'] = y
         self.goal_info[pos]['pose']['orientation']['z'] = z
         self.goal_info[pos]['pose']['orientation']['w'] = w
-
+    
+    def set_motion_blend(self, pos, linear, angular):
+        self.goal_info[pos]['blend']['linear'] = linear
+        self.goal_info[pos]['blend']['angular'] = angular
 
     def set_max_velocity(self, pos, linear, angular): # Sets the maximum linear and angular velociteis
         self.goal_info[pos]['max_velocity']['linear'] = linear
         self.goal_info[pos]['max_velocity']['angular'] = angular
 
-    def set_max_joint_velocity_accelartion(self, pos, velocity, acceleration): # Sets the maximum join velocity and acceleration
+    def set_max_joint_velocity_acceleration(self, pos, velocity, acceleration): # Sets the maximum join velocity and acceleration
         self.goal_info[pos]['max_joint_velocity'] = velocity
         self.goal_info[pos]['max_joint_acceleration'] = acceleration
-
 
     def printStatus(self, f):
         self.goalStat["state"] = f["status"]
 
-    def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server, returns a string to resport sucess or timeout
+    def start_motion(self, client, timeout): # Starts the motion by sending the message to the action server
 
         action_client = roslibpy.actionlib.ActionClient(client,
                                                 '/default_move_group/move',
-                                                'virtual_robot/MotionAction')
-
+                                                'commander_msgs/MotionAction')
 
         message_ = {'motion_sequence': self.goal_info} ## Creating a dictionary that looks the same as the simple motion
 
         goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(message_))
-        goal.on('feedback', lambda f: print(f))
+        #goal.on('feedback', lambda f: print(f))
+        goal.on("feedback", lambda f: print(f))
         goal.on("status", lambda f: self.printStatus(f))
         ## Start the goal - this is where the robot will start moving!
         goal.send()
 
-        result = self.wait_for_goal(timeout)    
-
+        result = goal.wait(timeout)
         # Clean up the action client
         action_client.dispose()
-        
-        return result
 
     def print_goal(self):
         print(self.goal_info)
@@ -152,11 +145,15 @@ class MotionLib:
                                 'points': self.trajectory_goals
                                 }}
 
+   
         goal = roslibpy.actionlib.Goal(action_client, roslibpy.Message(message_))
-
+        
         goal.on('feedback', lambda f: print(f))
         goal.send()
         result = goal.wait(timeout)
         action_client.dispose()
         #print('Result: {}'.format(result))
         return result
+
+
+
